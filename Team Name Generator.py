@@ -1,37 +1,76 @@
+import pandas as pd
+
 def main():
-	# Get number of teammates
-	try:
-		count = int(input("Enter team size: "))
-		print(f"Team size set to {count}\n\n")
-	except:
-		count = 4
-		print(f"Invalid input, setting team size to {count}\n\n")
-	# Get leader information
-	leader_present = input("Define a team Leader? (y/n): ")
-	if(leader_present.lower() in ["y","yes"]):
-		lead = str(input("Enter name of team leader: "))
-		lead = break_name(lead)
-		count -= 1;leader_present = True
-	else: leader_present = False
-	print("\n\n")
-	# Get member information
-	members = []
-	for i in range(count):
-		member = str(input(f"Enter name of team member {i+1}: "))
-		members.append(break_name(member))
-	print("\n\n")
-	# Make all possible combinations of members
-	combs = find_team_names(members)
-	# If there is a team leader, add to this list of combs using their initials
-	if(leader_present==True):
-		final_combs = []
-		for i in range(len(lead)):
-			for j in range(len(combs)):
-				final_combs.append(lead[i]+combs[j])
-		combs = final_combs
+    # Get number of teammates
+    try:
+        count = int(input("Enter team size: "))
+        print(f"Team size set to {count}\n\n")
+    except:
+        count = 4
+        print(f"Invalid input, setting team size to {count}\n\n")
+    # Get leader information
+    leader_present = input("Define a team Leader? (y/n): ")
+    if(leader_present.lower() in ["y","yes"]):
+        lead = str(input("Enter name of team leader: "))
+        lead = break_name(lead)
+        count -= 1;leader_present = True
+    else: leader_present = False
+    print("\n\n")
+    # Get member information
+    members = []
+    for i in range(count):
+        member = str(input(f"Enter name of team member {i+1}: "))
+        members.append(break_name(member))
+    print("\n\n")
+    # Make all possible combinations of members
+    combs = find_team_names(members)
+    # If there is a team leader, add to this list of combs using their initials
+    if(leader_present==True):
+        final_combs = []
+        for i in range(len(lead)):
+            for j in range(len(combs)):
+                final_combs.append(lead[i]+combs[j])
+        combs = final_combs
     # Print the final results
-	print(f"List of potential team names: \n\n{combs}")
-	return
+    print(f"List of potential team names: \n\n{combs}")
+    ## Print possible team names based on a list of colours
+    cols = loadcols()
+    # Format cols so every colour is 1 word long and unique
+    _ = {}
+    for col in cols:
+        temp = col.split(" ")
+        for temp2 in temp:
+            if(temp2 not in _):
+                _[temp2] = True
+    cols = _.copy()
+    del _
+    # Cycle through the team names and search for colours they could ascribe to
+    for team_name in combs:
+        find_colour(team_name,cols)
+    return
+
+# Find possible colours from a given name (i.e. team initial)
+def find_colour(name,colours):
+    n,found = name.lower().strip(" "),False
+    # Remove duplicate letters in name
+    i = 1
+    while(i<len(n)-1):
+        if(n[i]==n[i+1]):
+            n = n[:i]+n[i+1:]
+        i+=1
+    # Go through colours and check if any can be applied to this name
+    for colour in colours:
+        c,i = colour.lower(),0
+        for char in c:
+            if(char==n[i]):
+                i+=1
+            if(i>=len(n)):
+                print(f"Team {name}: {colour}")
+                found = True
+                break
+    if(found==False):
+        print(f"No valid colour found for team {name}")
+    return
 
 # Find all possible letter combinations
 def find_team_names(members):
@@ -106,5 +145,12 @@ def break_name(name,breakers=[" ","-"]):
         if(broken[i] in [""," ","-"]): broken.pop(i)
         else: i+=1
     return broken
+
+def loadcols(file = "v1_colours.csv"):
+    if(file[-3:]=="csv"):
+        frame = pd.read_csv(file)
+    elif(file[-4:]=="json"):
+        frame = pd.read_json(file)
+    return frame["name"]
 
 if(__name__ == "__main__"): main()
