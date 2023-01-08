@@ -43,7 +43,7 @@ def main():
     print(f"List of potential team names: \n\n{combs}")
 
     # Print possible team names based on a list of colours
-    cols = loadcols()
+    cols = get_colors()
 
     # Format cols so every colour is 1 word long and unique
     _ = {}
@@ -174,14 +174,14 @@ def break_name(name, breakers=[" ", "-"]):
     return broken
 
 
-def loadcols(file='v1_colours.csv'):
+def get_colors(file='v1_colours.csv'):
     if (file[-3:] == "csv"):
         frame = pd.read_csv(file)
 
     elif (file[-4:] == "json"):
         frame = pd.read_json(file)
 
-    return frame["name"]
+    return frame
 
 
 if (__name__ == "__main__"):
