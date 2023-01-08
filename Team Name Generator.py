@@ -26,7 +26,7 @@ def main():
     # Get member information
     members = []
     for i in range(count):
-        member = str(input(f"Enter name of team member {i+1}: "))
+        member = str(input(f"Enter name of team member number {i+2}: "))
         members.append(break_name(member))
     print("\n\n")
     # Make all possible combinations of members
